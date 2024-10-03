@@ -22,11 +22,23 @@ const games = [
 ]
 
 app.get("/games", (req, res) => {
-    res.send(games.map(g => g.name))
+    res.send(games.map(({id, name}) => {
+        return {id, name}
+    }))
 })
 
 app.get("/games/:id", (req, res) => {
-    res.send(games[req.params.id])
+    const idNumber = parseInt(req.params.id)
+
+    if (isNaN(idNumber)) {
+        return res.status(400).send({error:`Id must be a number: ${req.params.id}"`})
+    }
+    const game = games.find(g => g.id === idNumber)
+    if (!game) {
+        return res.status(404).send({error: "Game not found"})
+    }
+
+    res.send(game)
 })
 
 
